@@ -1,28 +1,43 @@
 var builder = require('botbuilder');
+var dateFormat = require('dateformat');
 
-const library = new builder.Library('reservation');
+const YesOption = 'Yes';
+const NoOption = 'No';
 
-library.dialog('/', [
-    (session) => {
+module.exports = [
+    function (session) {
         var name = session.message.user.name;
-        session.send("Welcome to the dinner reservation "+name);
+        session.send("Welcome to the meeting room reservation "+name);
         builder.Prompts.time(session, "Please provide a reservation date and time (e.g.: June 6th at 5pm)");
     },
     function (session, results) {
-        session.dialogData.reservationDate = builder.EntityRecognizer.resolveTime([results.response]);
-        builder.Prompts.number(session, "How many people are in your party?");
+        var date=builder.EntityRecognizer.resolveTime([results.response]);        
+        session.dialogData.reservationDate = dateFormat(date, "dddd, mmmm dS, yyyy, CET:h:MM TT Z");
+        builder.Prompts.number(session, "How many people should suite to the meeting room?");
     },
     function (session, results) {
         session.dialogData.partySize = results.response;
-        builder.Prompts.text(session, "Whose name will this reservation be under?");
+            builder.Prompts.choice(session, 'Do you need video conferencing option?', [YesOption, NoOption],{ listStyle: builder.ListStyle.button });        
     },
     function (session, results) {
-        session.dialogData.reservationName = session.message.user.name;
+        session.dialogData.video = results.response.entity;
 
-        // Process request and display reservation details
-        session.send(`Reservation confirmed. Reservation details: <br/>Date/Time: ${session.dialogData.reservationDate} <br/>Party size: ${session.dialogData.partySize} <br/>Reservation name: ${session.dialogData.reservationName}`);
+        if (session.dialogData.partySize <= 3 && session.dialogData.video =='No') {
+            session.dialogData.MeetingRoom = "Small";
+        } else if (session.dialogData.partySize > 3 && session.dialogData.partySize < 10 && session.dialogData.video =='No') {
+            session.dialogData.MeetingRoom = "Medium";
+        }if (session.dialogData.partySize <= 3 && session.dialogData.video =='Yes') {
+            session.dialogData.MeetingRoom = "Small Skype";
+        } else if (session.dialogData.partySize > 3 && session.dialogData.partySize < 10 && session.dialogData.video =='Yes') {
+            session.dialogData.MeetingRoom = "Medium Skype";
+        }else {
+            session.dialogData.MeetingRoom = "Giant";
+        }
+        session.send(`Reservation confirmed. Reservation details: <br/>Date/Time: ${session.dialogData.reservationDate} 
+        <br/>Size: ${session.dialogData.partySize} 
+        <br/>Video conference option required: ${session.dialogData.video} 
+        <br>Your meeting room will be: ${session.dialogData.MeetingRoom}`);
+        session.send('Good bye!');
         session.endDialog();
     }
-]).cancelAction('cancel', null, { matches: /^cancel/i });
-
-module.exports = library;
+];

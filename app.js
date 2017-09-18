@@ -14,9 +14,9 @@ var connector = new builder.ChatConnector({
 });
 
 const ChangePasswordOption = 'Change Password';
-const ResetPasswordOption = 'Reset Password';
-const ReservationOption = 'Reservation';
-const LanguageOption = 'Language';
+const ResetPasswordOption = 'New Password';
+const ReservationOption = 'Meeting Room Reservation';
+const LanguageOption = 'Language Poll';
 
 var bot = new builder.UniversalBot(connector, [
     (session) => {
@@ -32,16 +32,16 @@ var bot = new builder.UniversalBot(connector, [
         if (result.response) {
             switch (result.response.entity) {
                 case ChangePasswordOption:
-                    session.beginDialog('changePassword:/');
+                    session.beginDialog('test');
                     break;
                 case ResetPasswordOption:
-                    session.beginDialog('resetPassword:/');
+                    session.beginDialog('resetPassword');
                     break;
                 case ReservationOption:
-                    session.beginDialog('reservation:/');
+                    session.beginDialog('reservation');
                     break;
                 case LanguageOption:
-                    session.beginDialog('language:/');
+                    session.beginDialog('language');
                     break;
             }
         } else {
@@ -57,9 +57,13 @@ var bot = new builder.UniversalBot(connector, [
 ]);
 
 //Sub-Dialogs
-bot.library(require('./dialogs/reset-password'));
-bot.library(require('./dialogs/change-password'));
-bot.library(require('./dialogs/reservation'));
-bot.library(require('./dialogs/language'));
+bot.dialog('resetPassword', require('./dialogs/reset-password'));
+//bot.library(require('./dialogs/change-password'));
+bot.dialog('reservation', require('./dialogs/reservation'));
+bot.dialog('language', require('./dialogs/language'));
+bot.dialog('test', require('./dialogs/test'));
+//bot.dialog('winpass', require('./dialogs/winpass'));
+//bot.dialog('pampass', require('./dialogs/pampass'));
+
 
 server.post('/api/messages', connector.listen());

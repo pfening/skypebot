@@ -1,9 +1,7 @@
 var builder = require('botbuilder');
 
-const library = new builder.Library('language');
-
-library.dialog('/', [
-    (session) => {
+module.exports = [
+    function (session) {
         builder.Prompts.text(session, "Hello... What's your name?");
     },
     function (session, results) {
@@ -21,6 +19,4 @@ library.dialog('/', [
                      " years and use " + session.userData.language + ".");
         session.endDialog();
     }
-]).cancelAction('cancel', null, { matches: /^cancel/i });
-
-module.exports = library;
+];
