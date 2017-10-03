@@ -2,8 +2,8 @@ var builder = require('botbuilder');
 
 const library = new builder.Library('pampass');
 
-library.dialog('/', [
-    (session) => {
+module.exports = [
+    function (session) {
         builder.Prompts.text(session, 'What is your log in ID for PAM?');
     },
     function (session, results) {
@@ -25,6 +25,4 @@ library.dialog('/', [
     function (session, results) {
         session.endDialogWithResult({ resumed: builder.ResumeReason.completed });
     }
-]).cancelAction('cancel', null, { matches: /^cancel/i });
-
-module.exports = library;
+];

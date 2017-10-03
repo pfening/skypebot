@@ -19,7 +19,6 @@ module.exports = [
                     session.beginDialog('pampass');
                     break;
             }
-            session.endDialog();
         } else {
             session.send(`I am sorry but I didn't understand that. I need you to select one of the options below`);
         }

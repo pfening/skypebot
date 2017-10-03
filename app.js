@@ -17,6 +17,7 @@ const ChangePasswordOption = 'Change Password';
 const ResetPasswordOption = 'New Password';
 const ReservationOption = 'Meeting Room Reservation';
 const LanguageOption = 'Language Poll';
+const AgeOption = 'Age';
 
 var bot = new builder.UniversalBot(connector, [
     (session) => {
@@ -25,7 +26,7 @@ var bot = new builder.UniversalBot(connector, [
         session.send('Hello '+name);
         builder.Prompts.choice(session,            
             'What do yo want to do today?',
-            [ChangePasswordOption, ResetPasswordOption, ReservationOption, LanguageOption],
+            [ChangePasswordOption, ResetPasswordOption, ReservationOption, LanguageOption,AgeOption],
             { listStyle: builder.ListStyle.button });
     },
     (session, result) => {
@@ -42,6 +43,9 @@ var bot = new builder.UniversalBot(connector, [
                     break;
                 case LanguageOption:
                     session.beginDialog('language');
+                    break;
+                case AgeOption:
+                    session.beginDialog('age');
                     break;
             }
         } else {
@@ -62,7 +66,11 @@ bot.dialog('resetPassword', require('./dialogs/reset-password'));
 bot.dialog('reservation', require('./dialogs/reservation'));
 bot.dialog('language', require('./dialogs/language'));
 bot.dialog('test', require('./dialogs/test'));
-//bot.dialog('winpass', require('./dialogs/winpass'));
+//bot.dialog('age', require('./dialogs/age'));
+bot.library(require('./dialogs/age'));
+//bot.library(require('./dialogs/winpass'));
+//bot.library(require('./dialogs/pampass'));
+bot.dialog('winpass', require('./dialogs/winpass'));
 //bot.dialog('pampass', require('./dialogs/pampass'));
 
 

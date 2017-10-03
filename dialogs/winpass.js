@@ -1,30 +1,44 @@
 var builder = require('botbuilder');
 
-const library = new builder.Library('winpass');
-
-library.dialog('/', [
-    (session) => {
+module.exports = [
+    function (session) {
         builder.Prompts.text(session, 'What is your log in ID for WINDOWS?');
-    },
-    function (session, results) {
+     },     
+    function (session,results,next) {
         session.userData.usrid = results.response;
-        console.log(session.userData.usrid);
-        builder.Prompts.text(session, 'What is your old password for '+results.response+' ID?');
+        session.send('You entered: %s', results.response);
+        next();
     },
-    function (session, results) {
+
+    function(session){
+        builder.Prompts.text(session, 'Please type your old password');
+    },
+    function (session,results,next) {
         session.userData.opwd = results.response;
-        console.log(session.userData.opwd);
-        //if(session.userData.opwd=='123456'){ 
+        session.send('You entered: %s', results.response);
+        next();
+    },
+
+    function (session) {
+        builder.Prompts.text(session, 'Please enter your destination');
+    },
+    function (session, results, next) {
+        session.userData.destination = results.response;
+        session.send('You entered: %s', results.response);
+        next();
+    },
+
+    function (session) {
+        if(session.userData.opwd=='123456'){ 
         //session.beginDialog('IsPwdMatch');
-        //}else{
-        //    builder.Prompts.text(session, "Your old password did not matched");
-        //}
-        session.send(session.userData.uid +" / "+session.userData.opwd);
+        session.send("Your new password is bullshit!");
+        }else{
+            builder.Prompts.text(session, "Your old password did not matched");
+        }
+        session.send(session.userData.usrid +" / "+session.userData.opwd);
         session.endDialog();
     },
     function (session, results) {
         session.endDialogWithResult({ resumed: builder.ResumeReason.completed });
     }
-]).cancelAction('cancel', null, { matches: /^cancel/i });
-
-module.exports = library;
+];
